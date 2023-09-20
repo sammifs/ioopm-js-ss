@@ -27,5 +27,6 @@ bool ioopm_hash_table_lookup(ioopm_hash_table_t *ht, int key, char **result);
 /// @Brief remove any mapping from key to a value
 /// @param ht hash table operated upon
 /// @param key key to remove
-/// @return the value mapped to by key
-char *ioopm_hash_table_remove(ioopm_hash_table_t *ht, int key);
+/// @param result uppdated with the removed value if key was removed successfully
+/// @return true if key was removed successfully, false otherwise
+bool ioopm_hash_table_remove(ioopm_hash_table_t *ht, int key, char **result);

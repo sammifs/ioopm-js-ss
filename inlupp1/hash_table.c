@@ -97,3 +97,22 @@ bool ioopm_hash_table_lookup(ioopm_hash_table_t *ht, int key, char **result) {
   return false;
  }
 }
+bool ioopm_hash_table_remove(ioopm_hash_table_t *ht, int key, char **result) {
+ ///calculate the bucket for this entry
+ int bucket = key % 17;
+ ///search for an existing entry for a key
+ entry_t *entry = find_previous_entry_for_key(ht->buckets[bucket], key);
+ entry_t *next = entry->next;
+ if (entry->next != NULL && next->key == key) 
+ {
+  *result = next->value;
+  entry_t *new_next=next->next;
+  entry->next = new_next;
+  free(next);
+  return true;
+ }
+ else
+ {
+  return false;
+ }
+}

@@ -67,6 +67,23 @@ void test_lookup_empty() {
  CU_ASSERT_FALSE(ioopm_hash_table_lookup(ht, -1, &result));
  ioopm_hash_table_destroy(ht);
 }
+void remove_once() {
+ ioopm_hash_table_t *ht = ioopm_hash_table_create();
+ char *result_lookup = NULL;
+ char *removed = NULL;
+ int k = 2; // could be random
+ char *v = "Hello, world!";
+ ioopm_hash_table_insert(ht, k, v);
+ bool lookup_success=ioopm_hash_table_lookup(ht, k, &result_lookup); // k is in ht
+ CU_ASSERT_PTR_NOT_NULL(result_lookup); // result was updated
+ CU_ASSERT_TRUE(lookup_success); // lookup was successfull
+ bool remove_success = ioopm_hash_table_remove(ht, k, &removed);
+ CU_ASSERT_TRUE(remove_success); //removal was successfull
+ CU_ASSERT_PTR_NOT_NULL(removed); // removed was updated with the removed value
+ lookup_success=ioopm_hash_table_lookup(ht, k, &result_lookup); // k is no longer in ht
+ CU_ASSERT_FALSE(lookup_success); //lookup was unsuccessfull
+ ioopm_hash_table_destroy(ht);
+}
 int main() {
   // First we try to set up CUnit, and exit if we fail
   if (CU_initialize_registry() != CUE_SUCCESS)
@@ -91,6 +108,7 @@ int main() {
     (CU_add_test(my_test_suite, "insert once", test_insert_once) == NULL) || 
     (CU_add_test(my_test_suite, "several insertions into the same bucket", test_insert_three) == NULL) 
     || (CU_add_test(my_test_suite, "test_lookup_empty", test_lookup_empty) == NULL) 
+    || (CU_add_test(my_test_suite, "remove_once", remove_once) == NULL) 
     ||    0
   )
     {
