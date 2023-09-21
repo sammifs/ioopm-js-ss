@@ -115,6 +115,7 @@ void clear_ht() {
  }
  ioopm_hash_table_clear(ht);
  CU_ASSERT_TRUE(ioopm_hash_table_is_empty(ht));
+ ioopm_hash_table_destroy(ht);
 }
 void get_keys() {
  ioopm_hash_table_t *ht = ioopm_hash_table_create();
@@ -126,7 +127,8 @@ void get_keys() {
  }
  int *keys_in_ht = ioopm_hash_table_keys(ht);
  bool is_found = false;
- for (int i = 0; i < 5; ++i) {
+ int size = ioopm_hash_table_size(ht);
+ for (int i = 0; i < size; ++i) {
   for (int j = 0; j < 5; ++j) {
    if (keys[j] == keys_in_ht[i])
    {
@@ -143,6 +145,7 @@ void get_keys() {
   CU_ASSERT_TRUE(found[i]);
  }
  free(keys_in_ht);
+ ioopm_hash_table_destroy(ht);
 }
 void get_values() {
  ioopm_hash_table_t *ht = ioopm_hash_table_create();
@@ -154,7 +157,8 @@ void get_values() {
  }
  char **resulting_values = ioopm_hash_table_values(ht);
  bool is_found = false;
- for (int i = 0; i < 5; ++i) {
+ int i = 0;
+ while (resulting_values[i] != NULL) {
   for (int j = 0; j < 5; ++j) {
    if (strcmp(values[j], resulting_values[i]) == 0)
    {
@@ -165,12 +169,14 @@ void get_values() {
   if (is_found == false) {
    CU_FAIL("Found a value that was never inserted!");
   }
+  i++;
   is_found = false;
  }
  for (int i = 0; i < 5; ++i) {
   CU_ASSERT_TRUE(found[i]);
  }
  free(resulting_values);
+ ioopm_hash_table_destroy(ht);
 }
 void check_same_order() {
  ioopm_hash_table_t *ht = ioopm_hash_table_create();
@@ -197,6 +203,7 @@ void check_same_order() {
  }
  free(resulting_keys);
  free(resulting_values);
+ ioopm_hash_table_destroy(ht);
 }
 int main() {
   // First we try to set up CUnit, and exit if we fail

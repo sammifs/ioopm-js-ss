@@ -173,6 +173,6 @@ char **ioopm_hash_table_values(ioopm_hash_table_t *ht) {
    cursor = cursor->next;
   }
  }
- result[index]='\0';
+ result[index]=NULL;
  return result;
 }

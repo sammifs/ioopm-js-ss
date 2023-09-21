@@ -50,7 +50,7 @@ void ioopm_hash_table_clear(ioopm_hash_table_t *ht);
 int *ioopm_hash_table_keys(ioopm_hash_table_t *ht);
 /// @brief return the values for all entries in a hash map (in no particular order, but same as ioopm_hash_table_keys)
 /// @param h hash table operated upon
-/// @return an array of values for hash table h
+/// @return an NULL terminated array of values for hash table h
 char **ioopm_hash_table_values(ioopm_hash_table_t *ht);
 /// @brief check if a hash table has an entry with a given key
 /// @param h hash table operated upon
