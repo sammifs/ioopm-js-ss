@@ -216,6 +216,17 @@ void has_key() {
  CU_ASSERT_TRUE(success);
  ioopm_hash_table_destroy(ht);
 }
+void has_value() {
+ ioopm_hash_table_t *ht = ioopm_hash_table_create(); //creating a new hash table
+ int key = 0;
+ char *value = "Hello, world!";
+ bool success=ioopm_hash_table_has_value(ht, value); 
+ CU_ASSERT_FALSE(success);
+ ioopm_hash_table_insert(ht, key, value);
+ success = ioopm_hash_table_has_value(ht, value);
+ CU_ASSERT_TRUE(success);
+ ioopm_hash_table_destroy(ht);
+}
 int main() {
   // First we try to set up CUnit, and exit if we fail
   if (CU_initialize_registry() != CUE_SUCCESS)
@@ -248,6 +259,7 @@ int main() {
     || (CU_add_test(my_test_suite, "Returned array contains all values in ht", get_values) == NULL) 
     || (CU_add_test(my_test_suite, "Keys and values are in the same order", check_same_order) == NULL) 
     || (CU_add_test(my_test_suite, "has key", has_key) == NULL) 
+    || (CU_add_test(my_test_suite, "has value", has_value) == NULL)
     ||    0
   )
     {

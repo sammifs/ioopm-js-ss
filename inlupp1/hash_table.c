@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
 #define No_Buckets 17
 
@@ -179,4 +180,15 @@ char **ioopm_hash_table_values(ioopm_hash_table_t *ht) {
 bool ioopm_hash_table_has_key(ioopm_hash_table_t *ht, int key) {
 char *result = NULL;
 return ioopm_hash_table_lookup(ht, key, &result);
+}
+
+// J26, M36, A1, M37, M38
+bool ioopm_hash_table_has_value(ioopm_hash_table_t *ht, char *v) {
+    char **values = ioopm_hash_table_values(ht);
+    int size = ht->size;
+    for (int i=0; i<size; i++) {
+        if (strcmp(v, values[i]) == 0)  { free(values); return true; }
+    }
+    free(values);
+    return false;
 }
