@@ -145,7 +145,7 @@ void ioopm_hash_table_clear(ioopm_hash_table_t *ht)
 }
 int *ioopm_hash_table_keys(ioopm_hash_table_t *ht) {
  int siz = ioopm_hash_table_size(ht);
- int *result=calloc(siz, sizeof(int));
+ int *result=calloc(siz+1, sizeof(int));
  int index=0;
  for (int i = 0; i < No_Buckets; ++i) 
  {
@@ -161,7 +161,7 @@ int *ioopm_hash_table_keys(ioopm_hash_table_t *ht) {
 }
 char **ioopm_hash_table_values(ioopm_hash_table_t *ht) {
  int siz = ioopm_hash_table_size(ht);
- char **result=calloc(siz, 64*sizeof(char));
+ char **result=calloc(siz+1, 64*sizeof(char));
  int index=0;
  for (int i = 0; i < No_Buckets; ++i) 
  {
@@ -173,6 +173,10 @@ char **ioopm_hash_table_values(ioopm_hash_table_t *ht) {
    cursor = cursor->next;
   }
  }
- result[index]=NULL;
+ result[index]='\0';
  return result;
+}
+bool ioopm_hash_table_has_key(ioopm_hash_table_t *ht, int key) {
+char *result = NULL;
+return ioopm_hash_table_lookup(ht, key, &result);
 }

@@ -125,10 +125,10 @@ void get_keys() {
  for (int i = 0; i < 5; ++i) {
   ioopm_hash_table_insert(ht, keys[i], value);
  }
+ int length = ioopm_hash_table_size(ht);
  int *keys_in_ht = ioopm_hash_table_keys(ht);
  bool is_found = false;
- int size = ioopm_hash_table_size(ht);
- for (int i = 0; i < size; ++i) {
+ for (int i = 0; i < length; ++i) {
   for (int j = 0; j < 5; ++j) {
    if (keys[j] == keys_in_ht[i])
    {
@@ -156,8 +156,8 @@ void get_values() {
   ioopm_hash_table_insert(ht, i, values[i]);
  }
  char **resulting_values = ioopm_hash_table_values(ht);
- bool is_found = false;
  int i = 0;
+ bool is_found = false;
  while (resulting_values[i] != NULL) {
   for (int j = 0; j < 5; ++j) {
    if (strcmp(values[j], resulting_values[i]) == 0)
@@ -169,7 +169,7 @@ void get_values() {
   if (is_found == false) {
    CU_FAIL("Found a value that was never inserted!");
   }
-  i++;
+  i+=1;
   is_found = false;
  }
  for (int i = 0; i < 5; ++i) {
@@ -205,6 +205,17 @@ void check_same_order() {
  free(resulting_values);
  ioopm_hash_table_destroy(ht);
 }
+void has_key() {
+ ioopm_hash_table_t *ht = ioopm_hash_table_create(); //creating a new hash table
+ int key = 0;
+ char *value = "Hello, world!";
+ bool success=ioopm_hash_table_has_key(ht, key); 
+ CU_ASSERT_FALSE(success);
+ ioopm_hash_table_insert(ht, key, value);
+ success = ioopm_hash_table_has_key(ht, key);
+ CU_ASSERT_TRUE(success);
+ ioopm_hash_table_destroy(ht);
+}
 int main() {
   // First we try to set up CUnit, and exit if we fail
   if (CU_initialize_registry() != CUE_SUCCESS)
@@ -236,6 +247,7 @@ int main() {
     || (CU_add_test(my_test_suite, "Returns all keys in ht", get_keys) == NULL) 
     || (CU_add_test(my_test_suite, "Returned array contains all values in ht", get_values) == NULL) 
     || (CU_add_test(my_test_suite, "Keys and values are in the same order", check_same_order) == NULL) 
+    || (CU_add_test(my_test_suite, "has key", has_key) == NULL) 
     ||    0
   )
     {
