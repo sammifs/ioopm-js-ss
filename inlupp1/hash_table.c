@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+
+#define No_Buckets 17
+
 typedef struct entry entry_t;
 struct entry
 {
@@ -11,9 +14,10 @@ struct entry
 };
 struct hash_table
 {
- entry_t *buckets[17];
+ entry_t *buckets[No_Buckets];
+int size;
 };
-entry_t *entry_create(int key, char *value, entry_t *next) {
+static entry_t *entry_create(int key, char *value, entry_t *next) {
  entry_t *entr = calloc(1, sizeof(entry_t));
  entr->key=key;
  entr->value=value;
@@ -23,13 +27,14 @@ entry_t *entry_create(int key, char *value, entry_t *next) {
 ioopm_hash_table_t *ioopm_hash_table_create(void) 
 {
  ioopm_hash_table_t *result = calloc(1, sizeof(ioopm_hash_table_t));
- for (int i = 0; i < 17; ++i) {
+ for (int i = 0; i < No_Buckets; ++i) {
   result->buckets[i]=entry_create(0, NULL, NULL);
  }
+ result->size=0;
  return result;
 }
-entry_t *find_previous_entry_for_key(entry_t *entry, int key);
-void entry_destroy (entry_t *head) {
+static entry_t *find_previous_entry_for_key(entry_t *entry, int key);
+static void entry_destroy (entry_t *head) {
  while (head != NULL)
  {
   entry_t *current = head;
@@ -38,13 +43,13 @@ void entry_destroy (entry_t *head) {
  }
 }
 void ioopm_hash_table_destroy(ioopm_hash_table_t *ht) {
- for (int i = 0; i < 17; ++i) {
+ for (int i = 0; i < No_Buckets; ++i) {
   entry_destroy(ht->buckets[i]);
  }
  free(ht);
  return;
 }
-entry_t *find_previous_entry_for_key(entry_t *entry, int key) {
+static entry_t *find_previous_entry_for_key(entry_t *entry, int key) {
  entry_t *next=entry->next;
  if (next==NULL)
  {
@@ -67,7 +72,7 @@ entry_t *find_previous_entry_for_key(entry_t *entry, int key) {
 void ioopm_hash_table_insert(ioopm_hash_table_t *ht, int key, char *value)
 {
  ///calculate the bucket for this entry
- int bucket = key % 17;
+ int bucket = key % No_Buckets;
  ///search for an existing entry for a key
  entry_t *entry = find_previous_entry_for_key(ht->buckets[bucket], key);
  entry_t *next = entry->next;
@@ -79,11 +84,12 @@ void ioopm_hash_table_insert(ioopm_hash_table_t *ht, int key, char *value)
  else
  {
   entry->next = entry_create(key, value, next);
+  ht->size+=1;
  }
 }
 bool ioopm_hash_table_lookup(ioopm_hash_table_t *ht, int key, char **result) {
  /// find the previous entry for key
- entry_t *tmp = find_previous_entry_for_key(ht->buckets[abs(key%17)], key);
+ entry_t *tmp = find_previous_entry_for_key(ht->buckets[abs(key%No_Buckets)], key);
  entry_t *next = tmp->next;
  if (next && next->key==key)
  {
@@ -96,4 +102,77 @@ bool ioopm_hash_table_lookup(ioopm_hash_table_t *ht, int key, char **result) {
   /// else return false
   return false;
  }
+}
+bool ioopm_hash_table_remove(ioopm_hash_table_t *ht, int key, char **result) {
+ ///calculate the bucket for this entry
+ int bucket = key % No_Buckets;
+ ///search for an existing entry for a key
+ entry_t *entry = find_previous_entry_for_key(ht->buckets[bucket], key);
+ entry_t *next = entry->next;
+ if (entry->next != NULL && next->key == key) 
+ {
+  *result = next->value;
+  entry_t *new_next=next->next;
+  entry->next = new_next;
+  free(next);
+  ht->size-=1;
+  return true;
+ }
+ else
+ {
+  return false;
+ }
+}
+int ioopm_hash_table_size(ioopm_hash_table_t *ht) {
+ return ht->size;
+}
+bool ioopm_hash_table_is_empty(ioopm_hash_table_t *ht) {
+ return ht->size == 0;
+}
+void ioopm_hash_table_clear(ioopm_hash_table_t *ht)
+{
+ for (int i = 0; i < No_Buckets; ++i)
+ {
+  entry_t *head = ht->buckets[i]->next;
+  while (head != NULL)
+  {
+   entry_t *current = head;
+   head = head->next;
+   free(current);
+   ht->size -=1;
+  }
+ }
+}
+int *ioopm_hash_table_keys(ioopm_hash_table_t *ht) {
+ int siz = ioopm_hash_table_size(ht);
+ int *result=calloc(siz, sizeof(int));
+ int index=0;
+ for (int i = 0; i < No_Buckets; ++i) 
+ {
+  entry_t *cursor = ht->buckets[i]->next;
+  while (cursor != NULL)
+  {
+   result[index] = cursor->key;
+   index +=1;
+   cursor = cursor->next;
+  }
+ }
+ return result;
+}
+char **ioopm_hash_table_values(ioopm_hash_table_t *ht) {
+ int siz = ioopm_hash_table_size(ht);
+ char **result=calloc(siz, 64*sizeof(char));
+ int index=0;
+ for (int i = 0; i < No_Buckets; ++i) 
+ {
+  entry_t *cursor = ht->buckets[i]->next;
+  while (cursor != NULL)
+  {
+   result[index] = cursor->value;
+   index +=1;
+   cursor = cursor->next;
+  }
+ }
+ result[index]=NULL;
+ return result;
 }

@@ -67,6 +67,144 @@ void test_lookup_empty() {
  CU_ASSERT_FALSE(ioopm_hash_table_lookup(ht, -1, &result));
  ioopm_hash_table_destroy(ht);
 }
+void remove_once() {
+ ioopm_hash_table_t *ht = ioopm_hash_table_create();
+ char *result_lookup = NULL;
+ char *removed = NULL;
+ int k = 2; // could be random
+ char *v = "Hello, world!";
+ ioopm_hash_table_insert(ht, k, v);
+ bool lookup_success=ioopm_hash_table_lookup(ht, k, &result_lookup); // k is in ht
+ CU_ASSERT_PTR_NOT_NULL(result_lookup); // result was updated
+ CU_ASSERT_TRUE(lookup_success); // lookup was successfull
+ bool remove_success = ioopm_hash_table_remove(ht, k, &removed);
+ CU_ASSERT_TRUE(remove_success); //removal was successfull
+ CU_ASSERT_PTR_NOT_NULL(removed); // removed was updated with the removed value
+ lookup_success=ioopm_hash_table_lookup(ht, k, &result_lookup); // k is no longer in ht
+ CU_ASSERT_FALSE(lookup_success); //lookup was unsuccessfull
+ ioopm_hash_table_destroy(ht);
+}
+void counting_entries() {
+char *v="Hello, world!";
+ ioopm_hash_table_t *ht = ioopm_hash_table_create();
+ CU_ASSERT_EQUAL(0, ioopm_hash_table_size(ht));
+ ioopm_hash_table_insert(ht, 1, v);
+ CU_ASSERT_EQUAL(1, ioopm_hash_table_size(ht));
+ ioopm_hash_table_insert(ht, 7, v); // 2 entries
+ ioopm_hash_table_insert(ht, 4, v); // 3 entries
+ CU_ASSERT_EQUAL(3, ioopm_hash_table_size(ht));
+ ioopm_hash_table_destroy(ht);
+}
+void is_empty_ht() {
+ char *v="Hello, world!";
+ ioopm_hash_table_t *ht = ioopm_hash_table_create();
+ CU_ASSERT_TRUE(ioopm_hash_table_is_empty(ht));
+ ioopm_hash_table_insert(ht, 1, v);
+ ioopm_hash_table_insert(ht, 18, v); //2 entries
+ ioopm_hash_table_insert(ht, 7, v); // 3 entries
+ ioopm_hash_table_insert(ht, 4, v); // 4 entries
+ CU_ASSERT_FALSE(ioopm_hash_table_is_empty(ht));
+ ioopm_hash_table_destroy(ht);
+}
+void clear_ht() {
+ ioopm_hash_table_t *ht = ioopm_hash_table_create();
+ char *v = "test";
+ for (int i = 0; i < No_Buckets; ++i) {
+  ioopm_hash_table_insert(ht, i, v);
+  ioopm_hash_table_insert(ht, i+1, v);
+ }
+ ioopm_hash_table_clear(ht);
+ CU_ASSERT_TRUE(ioopm_hash_table_is_empty(ht));
+ ioopm_hash_table_destroy(ht);
+}
+void get_keys() {
+ ioopm_hash_table_t *ht = ioopm_hash_table_create();
+ int keys[5] = {3, 10, 42, 0, 99};
+ bool found[5] = {false};
+ char *value = "baz";
+ for (int i = 0; i < 5; ++i) {
+  ioopm_hash_table_insert(ht, keys[i], value);
+ }
+ int *keys_in_ht = ioopm_hash_table_keys(ht);
+ bool is_found = false;
+ int size = ioopm_hash_table_size(ht);
+ for (int i = 0; i < size; ++i) {
+  for (int j = 0; j < 5; ++j) {
+   if (keys[j] == keys_in_ht[i])
+   {
+    found[j]=true;
+    is_found = true;
+   }
+  }
+  if (is_found == false) {
+   CU_FAIL("Found a key that was never inserted!");
+  }
+  is_found = false;
+ }
+ for (int i = 0; i < 5; ++i) {
+  CU_ASSERT_TRUE(found[i]);
+ }
+ free(keys_in_ht);
+ ioopm_hash_table_destroy(ht);
+}
+void get_values() {
+ ioopm_hash_table_t *ht = ioopm_hash_table_create();
+ char *values[5] = {"three", "ten", "fortytwo", "zero", "ninetynine"};
+ bool found[5] = {false};
+ for (int i = 0; i < 5; ++i) 
+ {
+  ioopm_hash_table_insert(ht, i, values[i]);
+ }
+ char **resulting_values = ioopm_hash_table_values(ht);
+ bool is_found = false;
+ int i = 0;
+ while (resulting_values[i] != NULL) {
+  for (int j = 0; j < 5; ++j) {
+   if (strcmp(values[j], resulting_values[i]) == 0)
+   {
+    found[j]=true;
+    is_found = true;
+   }
+  }
+  if (is_found == false) {
+   CU_FAIL("Found a value that was never inserted!");
+  }
+  i++;
+  is_found = false;
+ }
+ for (int i = 0; i < 5; ++i) {
+  CU_ASSERT_TRUE(found[i]);
+ }
+ free(resulting_values);
+ ioopm_hash_table_destroy(ht);
+}
+void check_same_order() {
+ ioopm_hash_table_t *ht = ioopm_hash_table_create();
+ int keys[5] = {3, 10, 42, 0, 99};
+ char *values[5] = {"three", "ten", "fortytwo", "zero", "ninetynine"};
+ for (int i = 0; i < 5; ++i) {
+  ioopm_hash_table_insert(ht, keys[i], values[i]);
+ }
+ int *resulting_keys = ioopm_hash_table_keys(ht);
+ char **resulting_values = ioopm_hash_table_values(ht);
+ bool is_found = false;
+ for (int i = 0; i < 5; ++i) {
+  for (int j = 0; j < 5; ++j) {
+   if (keys[j] == resulting_keys[i])
+   {
+    CU_ASSERT_STRING_EQUAL(resulting_values[i], values[j]);
+    is_found = true;
+   }
+  }
+  if (is_found == false) {
+   CU_FAIL("Found a key that was never inserted!");  
+  }
+  is_found = false;
+ }
+ free(resulting_keys);
+ free(resulting_values);
+ ioopm_hash_table_destroy(ht);
+}
 int main() {
   // First we try to set up CUnit, and exit if we fail
   if (CU_initialize_registry() != CUE_SUCCESS)
@@ -91,6 +229,13 @@ int main() {
     (CU_add_test(my_test_suite, "insert once", test_insert_once) == NULL) || 
     (CU_add_test(my_test_suite, "several insertions into the same bucket", test_insert_three) == NULL) 
     || (CU_add_test(my_test_suite, "test_lookup_empty", test_lookup_empty) == NULL) 
+    || (CU_add_test(my_test_suite, "remove_once", remove_once) == NULL) 
+    || (CU_add_test(my_test_suite, "Counting entries", counting_entries) == NULL) 
+    || (CU_add_test(my_test_suite, "empty hash table is indeed empty", is_empty_ht) == NULL) 
+    || (CU_add_test(my_test_suite, "test of clear function", is_empty_ht) == NULL) 
+    || (CU_add_test(my_test_suite, "Returns all keys in ht", get_keys) == NULL) 
+    || (CU_add_test(my_test_suite, "Returned array contains all values in ht", get_values) == NULL) 
+    || (CU_add_test(my_test_suite, "Keys and values are in the same order", check_same_order) == NULL) 
     ||    0
   )
     {
