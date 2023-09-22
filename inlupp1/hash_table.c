@@ -3,10 +3,12 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
-
+#include <ctype.h>
 #define No_Buckets 17
 
 typedef struct entry entry_t;
+typedef bool(*ioopm_predicate)(int, char *, void *);
+typedef void(*ioopm_apply_function)(int, char **, void *);
 struct entry
 {
  int key;  // holds the key
@@ -177,12 +179,17 @@ char **ioopm_hash_table_values(ioopm_hash_table_t *ht) {
  result[index]='\0';
  return result;
 }
-bool ioopm_hash_table_has_key(ioopm_hash_table_t *ht, int key) {
-char *result = NULL;
-return ioopm_hash_table_lookup(ht, key, &result);
+static bool key_equiv(int key, char *value_ignored, void *x)
+{
+ int *other_key_ptr = x;
+ int other_key = *other_key_ptr;
+ return key == other_key;
 }
-
-// J26, M36, A1, M37, M38
+bool ioopm_hash_table_any(ioopm_hash_table_t *ht, ioopm_predicate P, void *x);
+bool ioopm_hash_table_has_key(ioopm_hash_table_t *ht, int key)
+{
+ return ioopm_hash_table_any(ht, key_equiv, &key);
+}
 bool ioopm_hash_table_has_value(ioopm_hash_table_t *ht, char *v) {
     char **values = ioopm_hash_table_values(ht);
     int size = ht->size;
@@ -191,4 +198,44 @@ bool ioopm_hash_table_has_value(ioopm_hash_table_t *ht, char *v) {
     }
     free(values);
     return false;
+}
+bool ioopm_hash_table_all(ioopm_hash_table_t *ht, ioopm_predicate P, void *x) {
+ int size = ioopm_hash_table_size(ht);
+ int *keys = ioopm_hash_table_keys(ht);
+ char **values = ioopm_hash_table_values(ht);
+ bool result = true;
+ for (int i = 0; i < size; ++i)
+ {
+  result = P(keys[i], values[i], x);
+  if (result == false) {
+   return false;
+  }
+ }
+ return true;
+}
+bool ioopm_hash_table_any(ioopm_hash_table_t *ht, ioopm_predicate P, void *x) {
+ int size = ioopm_hash_table_size(ht);
+ int *keys = ioopm_hash_table_keys(ht);
+ char **values = ioopm_hash_table_values(ht);
+ bool result = false;
+ for (int i = 0; i < size; ++i)
+ {
+  result = P(keys[i], values[i], x);
+  if (result == true) {
+   return true;
+  }
+ }
+ return false;
+}
+void ioopm_hash_table_apply_to_all(ioopm_hash_table_t *ht, ioopm_apply_function f, void *x) {
+ for (int i = 0; i < No_Buckets; ++i) {
+  entry_t *current = ht->buckets[i]->next;
+  while (current !=0) {
+   f(current->key, &current->value, x);
+   current = current->next;
+  }
+ }
+}
+bool is_even(int key, char *value, void *x) {
+ return key%2 == 0;
 }
