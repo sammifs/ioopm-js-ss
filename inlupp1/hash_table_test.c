@@ -1,6 +1,7 @@
 #include <CUnit/Basic.h>
 #include "hash_table.h"
 #include "linked_list.h"
+
 int init_suite(void) {
   // Change this function if you want to do something *before* you
   // run a test suite
@@ -17,6 +18,13 @@ void test_create_destroy_ll() {
  ioopm_list_t *xs = ioopm_linked_list_create();
  CU_ASSERT_PTR_NOT_NULL(xs);
  ioopm_linked_list_destroy(xs);
+}
+void test_linked_list_prepend_contains() {
+  ioopm_list_t *list = ioopm_linked_list_create();
+  CU_ASSERT_FALSE(ioopm_linked_list_contains(list, 3));
+  ioopm_linked_list_prepend(list, 3);
+  CU_ASSERT_TRUE(ioopm_linked_list_contains(list, 3));
+  ioopm_linked_list_destroy(list);
 }
 void test_create_destroy() {
  ioopm_hash_table_t *ht = ioopm_hash_table_create();
