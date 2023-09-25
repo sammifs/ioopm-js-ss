@@ -1,5 +1,6 @@
 #include <CUnit/Basic.h>
 #include "hash_table.h"
+#include "linked_list.h"
 int init_suite(void) {
   // Change this function if you want to do something *before* you
   // run a test suite
@@ -12,6 +13,11 @@ int clean_suite(void) {
   return 0;
 }
 
+void test_create_destroy_ll() {
+ ioopm_list_t *xs = ioopm_linked_list_create();
+ CU_ASSERT_PTR_NOT_NULL(xs);
+ ioopm_linked_list_destroy(xs);
+}
 void test_create_destroy() {
  ioopm_hash_table_t *ht = ioopm_hash_table_create();
  CU_ASSERT_PTR_NOT_NULL(ht);
@@ -286,6 +292,7 @@ void apply_func_test() {
   CU_ASSERT_TRUE(strcmp(updated_values[i], expected_str) ==0);
  }
  free(updated_values);
+ free(new_values);
  ioopm_hash_table_destroy(ht);
 }
 
@@ -303,6 +310,12 @@ int main() {
       return CU_get_error();
   }
 
+  CU_pSuite linked_lists = CU_add_suite("Test of linked list functions", init_suite, clean_suite);
+  if (linked_lists == NULL) {
+      // If the test suite could not be added, tear down CUnit and exit
+      CU_cleanup_registry();
+      return CU_get_error();
+  }
   // This is where we add the test functions to our test suite.
   // For each call to CU_add_test we specify the test suite, the
   // name or description of the test, and the function that runs
@@ -325,6 +338,7 @@ int main() {
     || (CU_add_test(my_test_suite, "test of all with is_even as predicate", for_all) == NULL)
     || (CU_add_test(my_test_suite, "test of any with is_even as predicate", for_any) == NULL)
     || (CU_add_test(my_test_suite, "test of apply function", apply_func_test) == NULL)
+    || (CU_add_test(linked_lists, "create and destroy a linked list", test_create_destroy_ll) == NULL)
     ||    0
   )
     {

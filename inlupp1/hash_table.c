@@ -188,14 +188,13 @@ bool ioopm_hash_table_has_key(ioopm_hash_table_t *ht, int key)
 {
  return ioopm_hash_table_any(ht, key_equiv, &key);
 }
+static bool value_equiv(int key_ignore, char *value, void *x) {
+ char **other_value_ptr = x;
+ char *other_value = *other_value_ptr;
+ return strcmp(value, other_value)==0;
+}
 bool ioopm_hash_table_has_value(ioopm_hash_table_t *ht, char *v) {
-    char **values = ioopm_hash_table_values(ht);
-    int size = ht->size;
-    for (int i=0; i<size; i++) {
-        if (strcmp(v, values[i]) == 0)  { free(values); return true; }
-    }
-    free(values);
-    return false;
+ return ioopm_hash_table_any(ht, value_equiv, &v);
 }
 bool ioopm_hash_table_all(ioopm_hash_table_t *ht, ioopm_predicate P, void *x) {
  int size = ioopm_hash_table_size(ht);
