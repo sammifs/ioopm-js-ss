@@ -227,6 +227,55 @@ void has_value() {
  CU_ASSERT_TRUE(success);
  ioopm_hash_table_destroy(ht);
 }
+bool is_even(int key, char *value, void *x) {
+ return key%2 == 0;
+}
+void for_all() {
+ ioopm_hash_table_t *ht = ioopm_hash_table_create();
+ char *value = "ignore";
+ ioopm_hash_table_insert(ht, 2, value);
+ ioopm_hash_table_insert(ht, 6, value);
+ ioopm_hash_table_insert(ht, 10, value);
+ ioopm_hash_table_insert(ht, 16, value);
+ ioopm_hash_table_insert(ht, 18, value);
+ CU_ASSERT_TRUE(ioopm_hash_table_all(ht, is_even, NULL));
+ ioopm_hash_table_insert(ht, 9, value);
+ CU_ASSERT_FALSE(ioopm_hash_table_all(ht, is_even, NULL));
+ ioopm_hash_table_destroy(ht);
+}
+void for_any() {
+ ioopm_hash_table_t *ht = ioopm_hash_table_create();
+ char *value = "ignore";
+ ioopm_hash_table_insert(ht, 3, value);
+ ioopm_hash_table_insert(ht, 7, value);
+ ioopm_hash_table_insert(ht, 11, value);
+ ioopm_hash_table_insert(ht, 15, value);
+ ioopm_hash_table_insert(ht, 17, value);
+ CU_ASSERT_FALSE(ioopm_hash_table_any(ht, is_even, NULL));
+ ioopm_hash_table_insert(ht, 8, value);
+ CU_ASSERT_TRUE(ioopm_hash_table_any(ht, is_even, NULL));
+ ioopm_hash_table_destroy(ht);
+}
+void update_str(int key, char **str, void *x) {
+ *str = "Chokladboll";
+}
+void apply_func_test() {
+ ioopm_hash_table_t *ht = ioopm_hash_table_create();
+ int keys[5] = {3, 10, 42, 0, 99};
+ char *values[5] = {"three", "ten", "fortytwo", "zero", "ninetynine"};
+ for (int i = 0; i < 5; ++i) {
+  ioopm_hash_table_insert(ht, keys[i], values[i]);
+ }
+ ioopm_hash_table_apply_to_all(ht, update_str, NULL);
+ char **updated_values = ioopm_hash_table_values(ht);
+ char *expected_str = "Chokladboll";
+ int siz = ioopm_hash_table_size(ht);
+ for (int i = 0; i < siz; ++i) {
+  CU_ASSERT_TRUE(strcmp(updated_values[i], expected_str) ==0);
+ }
+ free(updated_values);
+ ioopm_hash_table_destroy(ht);
+}
 int main() {
   // First we try to set up CUnit, and exit if we fail
   if (CU_initialize_registry() != CUE_SUCCESS)
@@ -260,6 +309,9 @@ int main() {
     || (CU_add_test(my_test_suite, "Keys and values are in the same order", check_same_order) == NULL) 
     || (CU_add_test(my_test_suite, "has key", has_key) == NULL) 
     || (CU_add_test(my_test_suite, "has value", has_value) == NULL)
+    || (CU_add_test(my_test_suite, "test of all with is_even as predicate", for_all) == NULL)
+    || (CU_add_test(my_test_suite, "test of any with is_even as predicate", for_any) == NULL)
+    || (CU_add_test(my_test_suite, "test of apply function", apply_func_test) == NULL)
     ||    0
   )
     {

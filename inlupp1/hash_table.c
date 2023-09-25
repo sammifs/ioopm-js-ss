@@ -7,8 +7,6 @@
 #define No_Buckets 17
 
 typedef struct entry entry_t;
-typedef bool(*ioopm_predicate)(int, char *, void *);
-typedef void(*ioopm_apply_function)(int, char **, void *);
 struct entry
 {
  int key;  // holds the key
@@ -208,9 +206,13 @@ bool ioopm_hash_table_all(ioopm_hash_table_t *ht, ioopm_predicate P, void *x) {
  {
   result = P(keys[i], values[i], x);
   if (result == false) {
+   free(values);
+   free(keys);
    return false;
   }
  }
+ free(values);
+ free(keys);
  return true;
 }
 bool ioopm_hash_table_any(ioopm_hash_table_t *ht, ioopm_predicate P, void *x) {
@@ -222,20 +224,21 @@ bool ioopm_hash_table_any(ioopm_hash_table_t *ht, ioopm_predicate P, void *x) {
  {
   result = P(keys[i], values[i], x);
   if (result == true) {
+   free(values);
+   free(keys);
    return true;
   }
  }
+ free(values);
+ free(keys);
  return false;
 }
 void ioopm_hash_table_apply_to_all(ioopm_hash_table_t *ht, ioopm_apply_function f, void *x) {
  for (int i = 0; i < No_Buckets; ++i) {
   entry_t *current = ht->buckets[i]->next;
-  while (current !=0) {
+  while (current !=NULL) {
    f(current->key, &current->value, x);
    current = current->next;
   }
  }
-}
-bool is_even(int key, char *value, void *x) {
- return key%2 == 0;
 }
