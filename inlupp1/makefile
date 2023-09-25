@@ -3,6 +3,9 @@ main: hash_table.c hash_table.h
 unit_tests: hash_table_test.c hash_table.c
 	gcc -Wall hash_table.c hash_table_test.c -lcunit -o unit_tests
 
+memtest:
+	valgrind --leak-check=full ./unit_tests
+
 clean:
 	rm -f *.o *.gch unit_tests
 
