@@ -259,6 +259,9 @@ void for_any() {
 void update_str(int key, char **str, void *x) {
  *str = "Chokladboll";
 }
+void pointer_move(int key, char **v, void *empty) {
+  *v = (*v + 1);
+}
 void apply_func_test() {
  ioopm_hash_table_t *ht = ioopm_hash_table_create();
  int keys[5] = {3, 10, 42, 0, 99};
@@ -266,6 +269,15 @@ void apply_func_test() {
  for (int i = 0; i < 5; ++i) {
   ioopm_hash_table_insert(ht, keys[i], values[i]);
  }
+ ioopm_hash_table_apply_to_all(ht, pointer_move, NULL);
+ char **new_values = ioopm_hash_table_values(ht);
+ char *correct_values[5] = {"ero", "hree", "ortytwo", "en", "inetynine"};
+ bool result = true;
+ for (int i=0; i<5; i++) {
+   if (strcmp(new_values[i], correct_values[i]) != 0) result = false;
+ }
+ CU_ASSERT_TRUE(result);
+
  ioopm_hash_table_apply_to_all(ht, update_str, NULL);
  char **updated_values = ioopm_hash_table_values(ht);
  char *expected_str = "Chokladboll";
@@ -276,6 +288,7 @@ void apply_func_test() {
  free(updated_values);
  ioopm_hash_table_destroy(ht);
 }
+
 int main() {
   // First we try to set up CUnit, and exit if we fail
   if (CU_initialize_registry() != CUE_SUCCESS)
