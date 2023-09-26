@@ -37,7 +37,7 @@ void test_size_ll() {
  int values[5]={3, 5, 2, 1, 8};
  for (int i = 0; i < 5; ++i) {
   ioopm_linked_list_append(xs, values[i]);
-  CU_ASSERT_TRUE(ioopm_linked_list_size(xs)==i);
+  CU_ASSERT_TRUE(ioopm_linked_list_size(xs)==i+1);
  }
  ioopm_linked_list_destroy(xs);
 }
@@ -58,19 +58,17 @@ void test_get_ll() {
 }
 void test_remove_ll() {
  ioopm_list_t *xs = ioopm_linked_list_create();
- CU_ASSERT_PTR_NOT_NULL(xs);
  int value=3;
  ioopm_linked_list_append(xs, value);
  CU_ASSERT_TRUE(ioopm_linked_list_contains(xs, 3));
- ioopm_linked_list_remove(xs, 0);
+ int removed_value=ioopm_linked_list_remove(xs, 0);
  CU_ASSERT_FALSE(ioopm_linked_list_contains(xs, 3));
+ CU_ASSERT_TRUE(value==removed_value);
  ioopm_linked_list_destroy(xs);
 }
 void test_clear_ll() {
  ioopm_list_t *xs = ioopm_linked_list_create();
- ioopm_linked_list_insert(xs, 0, 3);
- CU_ASSERT_FALSE(ioopm_linked_list_is_empty(xs));
- ioopm_linked_list_insert(xs, 0, 3);
+ ioopm_linked_list_insert(xs, 0, 5);
  CU_ASSERT_FALSE(ioopm_linked_list_is_empty(xs));
  ioopm_linked_list_clear(xs);
  CU_ASSERT_TRUE(ioopm_linked_list_is_empty(xs));
@@ -108,6 +106,22 @@ void test_append_ll() {
  ioopm_linked_list_append(xs, value);
  CU_ASSERT_TRUE(ioopm_linked_list_contains(xs, 3));
  ioopm_linked_list_destroy(xs);
+}
+void quadruple(int index, int *value, void *extra) {
+ *value=*value*4;
+}
+void test_apply_ll() {
+ ioopm_list_t *list = ioopm_linked_list_create();
+ int values[5] = {3, 7, 15, 9, 17};
+ int expected_values[5] = {12, 28, 60, 36, 68};
+ for (int i = 0; i < 5; ++i) {
+  ioopm_linked_list_append(list, values[i]);
+ }
+ ioopm_linked_list_apply_to_all(list, quadruple, NULL);
+ for (int i = 0; i < ioopm_linked_list_size(list); ++i) {
+  CU_ASSERT_TRUE(expected_values[i] == ioopm_linked_list_get(list, i));
+ }
+ ioopm_linked_list_destroy(list);
 }
 void test_create_destroy() {
  ioopm_hash_table_t *ht = ioopm_hash_table_create();
@@ -438,6 +452,8 @@ int main() {
     || (CU_add_test(linked_lists, "Test of clear", test_clear_ll) == NULL)
     || (CU_add_test(linked_lists, "Test of all", test_all_ll) == NULL)
     || (CU_add_test(linked_lists, "Test of any", test_any_ll) == NULL)
+    || (CU_add_test(linked_lists, "Test of append", test_append_ll) == NULL)
+    || (CU_add_test(linked_lists, "Test of apply", test_apply_ll) == NULL)
     ||    0
   )
     {
