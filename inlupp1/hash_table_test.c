@@ -430,6 +430,14 @@ int main() {
     || (CU_add_test(my_test_suite, "test of any with is_even as predicate", for_any) == NULL)
     || (CU_add_test(my_test_suite, "test of apply function", apply_func_test) == NULL)
     || (CU_add_test(linked_lists, "create and destroy a linked list", test_create_destroy_ll) == NULL)
+    || (CU_add_test(linked_lists, "Test of prepend and contain functions", test_linked_list_prepend_contains) == NULL)
+    || (CU_add_test(linked_lists, "Test of is_empty", test_is_empty_ll) == NULL)
+    || (CU_add_test(linked_lists, "Test of size", test_size_ll) == NULL)
+    || (CU_add_test(linked_lists, "Test of get", test_get_ll) == NULL)
+    || (CU_add_test(linked_lists, "Test of remove", test_remove_ll) == NULL)
+    || (CU_add_test(linked_lists, "Test of clear", test_clear_ll) == NULL)
+    || (CU_add_test(linked_lists, "Test of all", test_all_ll) == NULL)
+    || (CU_add_test(linked_lists, "Test of any", test_any_ll) == NULL)
     ||    0
   )
     {
