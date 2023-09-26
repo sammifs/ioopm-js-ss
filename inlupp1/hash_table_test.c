@@ -1,7 +1,6 @@
 #include <CUnit/Basic.h>
 #include "hash_table.h"
 #include "linked_list.h"
-
 int init_suite(void) {
   // Change this function if you want to do something *before* you
   // run a test suite
@@ -25,6 +24,90 @@ void test_linked_list_prepend_contains() {
   ioopm_linked_list_prepend(list, 3);
   CU_ASSERT_TRUE(ioopm_linked_list_contains(list, 3));
   ioopm_linked_list_destroy(list);
+}
+void test_is_empty_ll() {
+ ioopm_list_t *xs = ioopm_linked_list_create();
+ CU_ASSERT_TRUE(ioopm_linked_list_is_empty(xs));
+ ioopm_linked_list_append(xs, 8);
+ CU_ASSERT_FALSE(ioopm_linked_list_is_empty(xs));
+ ioopm_linked_list_destroy(xs);
+}
+void test_size_ll() {
+ ioopm_list_t *xs = ioopm_linked_list_create();
+ int values[5]={3, 5, 2, 1, 8};
+ for (int i = 0; i < 5; ++i) {
+  ioopm_linked_list_append(xs, values[i]);
+  CU_ASSERT_TRUE(ioopm_linked_list_size(xs)==i);
+ }
+ ioopm_linked_list_destroy(xs);
+}
+void test_get_ll() {
+ ioopm_list_t *xs = ioopm_linked_list_create();
+ int values[5]={3, 5, 2, 1, 8};
+ int new_values[5];
+ for (int i = 0; i < 5; ++i) {
+  ioopm_linked_list_append(xs, values[i]);
+ }
+ for (int i = 0; i < 5; ++i) {
+  new_values[i]=ioopm_linked_list_get(xs, i);
+ }
+ for (int i = 0; i < 5; ++i) {
+  CU_ASSERT_TRUE(values[i] == new_values[i]);
+ }
+ ioopm_linked_list_destroy(xs);
+}
+void test_remove_ll() {
+ ioopm_list_t *xs = ioopm_linked_list_create();
+ CU_ASSERT_PTR_NOT_NULL(xs);
+ int value=3;
+ ioopm_linked_list_append(xs, value);
+ CU_ASSERT_TRUE(ioopm_linked_list_contains(xs, 3));
+ ioopm_linked_list_remove(xs, 0);
+ CU_ASSERT_FALSE(ioopm_linked_list_contains(xs, 3));
+ ioopm_linked_list_destroy(xs);
+}
+void test_clear_ll() {
+ ioopm_list_t *xs = ioopm_linked_list_create();
+ ioopm_linked_list_insert(xs, 0, 3);
+ CU_ASSERT_FALSE(ioopm_linked_list_is_empty(xs));
+ ioopm_linked_list_insert(xs, 0, 3);
+ CU_ASSERT_FALSE(ioopm_linked_list_is_empty(xs));
+ ioopm_linked_list_clear(xs);
+ CU_ASSERT_TRUE(ioopm_linked_list_is_empty(xs));
+ ioopm_linked_list_destroy(xs);
+}
+bool is_even_ll(int key, int value, void *x) {
+ return value%2==0;
+}
+void test_all_ll() {
+ ioopm_list_t *xs = ioopm_linked_list_create();
+ int values[5] = {2, 4, 14, 8, 18};
+ for (int i = 0; i < 5; ++i) {
+  ioopm_linked_list_append(xs, values[i]);
+ }
+ CU_ASSERT_TRUE(ioopm_linked_list_all(xs, is_even_ll, NULL));
+ ioopm_linked_list_insert(xs, 2, 7);
+ CU_ASSERT_FALSE(ioopm_linked_list_all(xs, is_even_ll, NULL));
+ ioopm_linked_list_destroy(xs);
+}
+void test_any_ll() {
+ ioopm_list_t *xs = ioopm_linked_list_create();
+ int values[5] = {3, 7, 15, 9, 17};
+ for (int i = 0; i < 5; ++i) {
+  ioopm_linked_list_append(xs, values[i]);
+ }
+ CU_ASSERT_FALSE(ioopm_linked_list_any(xs, is_even_ll, NULL));
+ ioopm_linked_list_insert(xs, 2, 8);
+ CU_ASSERT_TRUE(ioopm_linked_list_any(xs, is_even_ll, NULL));
+ ioopm_linked_list_destroy(xs);
+}
+void test_append_ll() {
+ ioopm_list_t *xs = ioopm_linked_list_create();
+ int value=3;
+ CU_ASSERT_FALSE(ioopm_linked_list_contains(xs, 3));
+ ioopm_linked_list_append(xs, value);
+ CU_ASSERT_TRUE(ioopm_linked_list_contains(xs, 3));
+ ioopm_linked_list_destroy(xs);
 }
 void test_create_destroy() {
  ioopm_hash_table_t *ht = ioopm_hash_table_create();
