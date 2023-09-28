@@ -1,8 +1,26 @@
 #pragma once
+
 #include <stdbool.h>
+
+// The links of the linked list
+struct link
+{
+    int value;
+    struct link *next;
+};
+
+typedef struct link ioopm_link_t;
 
 typedef bool(*ioopm_int_predicate)(int, int, void *);
 typedef void(*ioopm_apply_int_function)(int, int *, void *);
+
+// The list contains a pointer to its first link, and its size
+struct list
+{
+    ioopm_link_t *head;
+    int size;
+};
+
 typedef struct list ioopm_list_t; /// Meta: struct definition goes in C file
 
 /// @brief Creates a new empty list

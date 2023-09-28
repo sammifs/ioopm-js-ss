@@ -1,6 +1,8 @@
 #include <CUnit/Basic.h>
 #include "hash_table.h"
 #include "linked_list.h"
+#include "iterator.h"
+
 int init_suite(void) {
   // Change this function if you want to do something *before* you
   // run a test suite
@@ -11,6 +13,32 @@ int clean_suite(void) {
   // Change this function if you want to do something *after* you
   // run a test suite
   return 0;
+}
+
+void test_create_iter_destroy() {
+  ioopm_list_t *ls = ioopm_linked_list_create();
+  ioopm_linked_list_append(ls, 1);
+  ioopm_linked_list_append(ls, 13);
+  ioopm_linked_list_append(ls, 2);
+  ioopm_linked_list_append(ls, 14);
+
+  ioopm_list_iterator_t *iter = ioopm_list_iterator(ls);
+  CU_ASSERT_PTR_NOT_NULL(iter);
+  for (int i=0; i<3; i++) {
+    ioopm_iterator_next(iter);
+  } 
+  CU_ASSERT_EQUAL(14, ioopm_iterator_current(iter));
+
+  ioopm_iterator_reset(iter);
+  CU_ASSERT_EQUAL(1, ioopm_iterator_current(iter));
+  CU_ASSERT_TRUE(ioopm_iterator_has_next(iter));
+  ioopm_iterator_next(iter);
+  CU_ASSERT_EQUAL(13, ioopm_iterator_remove(iter));
+
+  CU_ASSERT_FALSE(ioopm_linked_list_contains(ls, 13));
+
+  ioopm_iterator_destroy(iter);
+  ioopm_linked_list_destroy(ls);
 }
 
 void test_create_destroy_ll() {
@@ -421,6 +449,12 @@ int main() {
       CU_cleanup_registry();
       return CU_get_error();
   }
+  CU_pSuite iterator = CU_add_suite("Test of iterator functions", init_suite, clean_suite);
+  if (iterator == NULL) {
+      // If the test suite could not be added, tear down CUnit and exit
+      CU_cleanup_registry();
+      return CU_get_error();
+  }
   // This is where we add the test functions to our test suite.
   // For each call to CU_add_test we specify the test suite, the
   // name or description of the test, and the function that runs
@@ -454,6 +488,7 @@ int main() {
     || (CU_add_test(linked_lists, "Test of any", test_any_ll) == NULL)
     || (CU_add_test(linked_lists, "Test of append", test_append_ll) == NULL)
     || (CU_add_test(linked_lists, "Test of apply", test_apply_ll) == NULL)
+    || (CU_add_test(iterator, "Iterator test", test_create_iter_destroy) == NULL)
     ||    0
   )
     {
