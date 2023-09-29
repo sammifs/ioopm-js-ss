@@ -1,4 +1,5 @@
 #include "linked_list.h"
+#include "iterator.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -71,7 +72,8 @@ void ioopm_linked_list_append(ioopm_list_t *list, int value)
 void ioopm_linked_list_prepend(ioopm_list_t *list, int value)
 {
     assert(list);
-    list->head = link_create(0, link_create(value, list->head));
+    ioopm_link_t *first = list->head->next;
+    list->head->next = link_create(value, first);
     list->size++;
 }
 void ioopm_linked_list_insert(ioopm_list_t *list, int index, int value)
