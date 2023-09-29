@@ -2,7 +2,6 @@
 #include "hash_table.h"
 #include "linked_list.h"
 #include "iterator.h"
-
 int init_suite(void) {
   // Change this function if you want to do something *before* you
   // run a test suite
@@ -14,7 +13,6 @@ int clean_suite(void) {
   // run a test suite
   return 0;
 }
-
 void test_create_iter_destroy() {
   ioopm_list_t *ls = ioopm_linked_list_create();
   ioopm_linked_list_append(ls, 1);
@@ -40,7 +38,6 @@ void test_create_iter_destroy() {
   ioopm_iterator_destroy(iter);
   ioopm_linked_list_destroy(ls);
 }
-
 void test_create_destroy_ll() {
  ioopm_list_t *xs = ioopm_linked_list_create();
  CU_ASSERT_PTR_NOT_NULL(xs);
@@ -91,7 +88,7 @@ void test_remove_ll() {
  CU_ASSERT_TRUE(ioopm_linked_list_contains(xs, 3));
  int removed_value=ioopm_linked_list_remove(xs, 0);
  CU_ASSERT_FALSE(ioopm_linked_list_contains(xs, 3));
- CU_ASSERT_TRUE(value==removed_value);
+ CU_ASSERT_TRUE(removed_value==3);
  ioopm_linked_list_destroy(xs);
 }
 void test_clear_ll() {
@@ -449,12 +446,13 @@ int main() {
       CU_cleanup_registry();
       return CU_get_error();
   }
-  CU_pSuite iterator = CU_add_suite("Test of iterator functions", init_suite, clean_suite);
-  if (iterator == NULL) {
+  CU_pSuite iterator = CU_add_suite("Test of iterator", init_suite, clean_suite);
+  if (my_test_suite == NULL) {
       // If the test suite could not be added, tear down CUnit and exit
       CU_cleanup_registry();
       return CU_get_error();
   }
+
   // This is where we add the test functions to our test suite.
   // For each call to CU_add_test we specify the test suite, the
   // name or description of the test, and the function that runs

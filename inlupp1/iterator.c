@@ -22,21 +22,11 @@ int ioopm_iterator_next(ioopm_list_iterator_t *iter) {
 }
 
 int ioopm_iterator_remove(ioopm_list_iterator_t *iter) {
-    ioopm_link_t *cursor = iter->list->head;
-
-    ioopm_link_t *to_remove = iter->current;
-
-    while (cursor->next != to_remove) {
-        cursor = cursor->next;
-    }
-
-    cursor->next = to_remove->next;
-    iter->list->size--;
-    int result = to_remove->value;
-
-    free(to_remove);
-
-    return result;
+ ioopm_link_t *to_remove = iter->current->next;
+ iter->current->next=to_remove->next;
+ int value = to_remove->value;
+ free(to_remove);
+ return value;
 }
 
 void ioopm_iterator_reset(ioopm_list_iterator_t *iter) {
@@ -44,7 +34,7 @@ void ioopm_iterator_reset(ioopm_list_iterator_t *iter) {
 }
 
 int ioopm_iterator_current(ioopm_list_iterator_t *iter) {
-    return iter->current->value;
+    return iter->current->next->value;
 }
 
 void ioopm_iterator_destroy(ioopm_list_iterator_t *iter) {
