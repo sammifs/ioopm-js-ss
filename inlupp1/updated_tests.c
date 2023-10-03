@@ -309,9 +309,6 @@ void get_keys()
  ioopm_linked_list_destroy(keys_in_ht);
  ioopm_hash_table_destroy(ht);
 }
-bool compare_values(elem_t a, elem_t b) {
-return strcmp(a.p, b.p) ==0;
-}
 void get_values()
 {
  ioopm_hash_table_t *ht = ioopm_hash_table_create(hash_fun, compare_int_elements);

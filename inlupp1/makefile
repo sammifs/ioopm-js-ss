@@ -7,8 +7,8 @@ iterator: iterator.c iterator.h simple_linked_list-1.c linked_list.h common.h
 
 unit_tests: hash_table_test.c hash_table.c simple_linked_list-1.c iterator.c
 	gcc -Wall hash_table.c simple_linked_list-1.c hash_table_test.c iterator.c -lcunit -o unit_tests
-updated_tests: updated_tests.c hash_table.c simple_linked_list-1.c iterator.c
-	gcc -Wall simple_linked_list-1.c hash_table.c iterator.c updated_tests.c -lcunit -o updated_tests
+updated_tests: updated_tests.c hash_table.c simple_linked_list-1.c iterator.c common.c
+	gcc -Wall simple_linked_list-1.c hash_table.c common.c iterator.c updated_tests.c -lcunit -o updated_tests
 memtest:
 	valgrind --leak-check=full ./unit_tests
 

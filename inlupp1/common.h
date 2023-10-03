@@ -29,4 +29,5 @@ struct list
     ioopm_eq_function eq_fn;
 };
 bool compare_int_elements(elem_t a, elem_t b);
+bool compare_values(elem_t a, elem_t b);
 typedef struct list ioopm_list_t;

@@ -285,6 +285,3 @@ void ioopm_hash_table_apply_to_all(ioopm_hash_table_t *ht, ioopm_apply_function 
   }
  }
 }
-bool compare_int_elements(elem_t a, elem_t b) {
-    return b.i - a.i == 0;
-}
