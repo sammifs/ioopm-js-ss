@@ -273,79 +273,82 @@ void clear_ht()
 }
 void get_keys()
 {
-  ioopm_hash_table_t *ht = ioopm_hash_table_create(hash_fun, compare_int_elements);
-  elem_t keys[5] = {int_elem(1), int_elem(2), int_elem(3), int_elem(4), int_elem(5)};
-  bool found[5] = {false};
-  char *value = "baz";
-  for (int i = 0; i < 5; ++i)
+ ioopm_hash_table_t *ht = ioopm_hash_table_create(hash_fun, compare_int_elements);
+ elem_t keys[5] = {int_elem(3), int_elem(10), int_elem(42), int_elem(0), int_elem(99)};
+ bool found[5] = {false};
+ char *value = "baz";
+ for (int i = 0; i < 5; ++i)
+ {
+  ioopm_hash_table_insert(ht, keys[i], ptr_elem(value));
+ }
+ int length = ioopm_hash_table_size(ht);
+ ioopm_list_t *keys_in_ht = ioopm_hash_table_keys(ht);
+ bool is_found = false;
+ ioopm_link_t *cursor = keys_in_ht->head->next;
+ for (int i = 0; i < length; ++i)
+ {
+  for (int j = 0; j < 5; ++j)
   {
-    ioopm_hash_table_insert(ht, keys[i], ptr_elem(value));
+   if (keys_in_ht->eq_fn(keys[j], cursor->value))
+   {
+    found[i] = true;
+    is_found = true;
+   }
   }
-  int length = ioopm_hash_table_size(ht);
-  ioopm_list_t *keys_in_ht = ioopm_hash_table_keys(ht);
-  bool is_found = false;
-  for (int i = 0; i < length; ++i)
+  cursor = cursor->next;
+  if (is_found == false)
   {
-    ioopm_link_t *cursor = keys_in_ht->head->next;
-    for (int j = 0; j < 5; ++j)
-    {
-      if (keys_in_ht->eq_fn(keys[j], cursor->value))
-      {
-        found[j] = true;
-        is_found = true;
-      }
-      cursor = cursor->next;
-    }
-    if (is_found == false)
-    {
-      CU_FAIL("Found a key that was never inserted!");
-    }
-    is_found = false;
+   CU_FAIL("Found a key that was never inserted!");
   }
-  for (int i = 0; i < 5; ++i)
-  {
-    CU_ASSERT_TRUE(found[i]);
-  }
-  ioopm_linked_list_destroy(keys_in_ht);
-  ioopm_hash_table_destroy(ht);
+  is_found = false;
+ }
+ for (int i = 0; i < 5; ++i)
+ {
+  CU_ASSERT_TRUE(found[i]);
+ }
+ ioopm_linked_list_destroy(keys_in_ht);
+ ioopm_hash_table_destroy(ht);
+}
+bool compare_values(elem_t a, elem_t b) {
+return strcmp(a.p, b.p) ==0;
 }
 void get_values()
 {
-  ioopm_hash_table_t *ht = ioopm_hash_table_create(hash_fun, compare_int_elements);
-  char *values[5] = {"three", "ten", "fortytwo", "zero", "ninetynine"};
-  bool found[5] = {false};
-  for (int i = 0; i < 5; ++i)
+ ioopm_hash_table_t *ht = ioopm_hash_table_create(hash_fun, compare_int_elements);
+ char *values[5] = {"three", "ten", "fortytwo", "zero", "ninetynine"};
+ bool found[5] = {false};
+ for (int i = 0; i < 5; ++i)
+ {
+  ioopm_hash_table_insert(ht, int_elem(i), ptr_elem(values[i]));
+ }
+ ioopm_list_t *resulting_values = ioopm_hash_table_values(ht);
+ bool is_found = false;
+ ioopm_link_t *cursor = resulting_values->head->next;
+ int i = 0;
+ while (cursor != NULL && !is_found)
+ {
+  for (int j = 0; j < 5; ++j)
   {
-    ioopm_hash_table_insert(ht, int_elem(i), ptr_elem(values[i]));
+   if (compare_values(cursor->value, ptr_elem(values[j])))
+   {
+    found[i] = true;
+    is_found = true;
+   }
   }
-  ioopm_list_t *resulting_values = ioopm_hash_table_values(ht);
-  int i = 0;
-  bool is_found = false;
-  ioopm_link_t *cursor = resulting_values->head->next;
-  while (cursor != NULL)
+  cursor = cursor->next;
+  if (is_found == false)
   {
-    for (int j = 0; j < 5; ++j)
-    {
-      if (value_equiv(int_elem(0), cursor->value, values[j]))
-      {
-        found[j] = true;
-        is_found = true;
-      }
-      cursor = cursor->next;
-    }
-    if (is_found == false)
-    {
-      CU_FAIL("Found a value that was never inserted!");
-    }
-    i += 1;
-    is_found = false;
+   CU_FAIL("Found a value that was never inserted!");
   }
-  for (int i = 0; i < 5; ++i)
-  {
-    CU_ASSERT_TRUE(found[i]);
-  }
-  ioopm_linked_list_destroy(resulting_values);
-  ioopm_hash_table_destroy(ht);
+  is_found = false;
+  i=i+1;
+ }
+ for (int i = 0; i < 5; ++i)
+ {
+  CU_ASSERT_TRUE(found[i]);
+ }
+ ioopm_linked_list_destroy(resulting_values);
+ ioopm_hash_table_destroy(ht);
 }
 void has_key()
 {

@@ -149,15 +149,12 @@ void ioopm_hash_table_clear(ioopm_hash_table_t *ht)
   }
  }
 }
-int compare_int_elements(elem_t a, elem_t b) {
-    return b.i - a.i;
-}
 
 ioopm_list_t *ioopm_hash_table_keys(ioopm_hash_table_t *ht) {
     int siz = ioopm_hash_table_size(ht);
     if (siz == 0) { return NULL; }
 
-    ioopm_list_t *ls = ioopm_linked_list_create((ioopm_eq_function) compare_int_elements);
+    ioopm_list_t *ls = ioopm_linked_list_create(compare_int_elements);
     for (int i=0; i<No_Buckets; i++) {
         entry_t *cursor = ht->buckets[i]->next;
         while (cursor != NULL) {
@@ -167,27 +164,10 @@ ioopm_list_t *ioopm_hash_table_keys(ioopm_hash_table_t *ht) {
     }
     return ls;
 }
-// int *ioopm_hash_table_keys(ioopm_hash_table_t *ht) {
-//  int siz = ioopm_hash_table_size(ht);
-//  int *result=calloc(siz+1, sizeof(int));
-//  int index=0;
-//  for (int i = 0; i < No_Buckets; ++i) 
-//  {
-//   entry_t *cursor = ht->buckets[i]->next;
-//   while (cursor != NULL)
-//   {
-//    result[index] = cursor->key;
-//    index +=1;
-//    cursor = cursor->next;
-//   }
-//  }
-//  return result;
-// }
 ioopm_list_t *ioopm_hash_table_values(ioopm_hash_table_t *ht) {
     int siz = ioopm_hash_table_size(ht);
     if (siz == 0) return NULL;
-
-    ioopm_list_t *ls = ioopm_linked_list_create((ioopm_eq_function) compare_int_elements);
+    ioopm_list_t *ls = ioopm_linked_list_create( (ioopm_eq_function) compare_int_elements);
     for (int i=0; i<No_Buckets; i++) {
         entry_t *cursor = ht->buckets[i]->next;
         while (cursor != NULL) {
@@ -197,8 +177,7 @@ ioopm_list_t *ioopm_hash_table_values(ioopm_hash_table_t *ht) {
     }
     return ls;
 }
-
-static bool key_equiv(elem_t key, elem_t value_ignored, void *x)
+bool key_equiv(elem_t key, elem_t value_ignored, void *x)
 {
  elem_t *other_key_ptr = x;
  return compare_int_elements(key, *other_key_ptr);
@@ -208,7 +187,7 @@ bool ioopm_hash_table_has_key(ioopm_hash_table_t *ht, elem_t key)
 {
  return ioopm_hash_table_any(ht, key_equiv, &key);
 }
-static bool value_equiv(elem_t key_ignore, elem_t value, void *x) {
+bool value_equiv(elem_t key, elem_t value, void *x) {
  elem_t *other_value = x;
  return strcmp(value.p, (*other_value).p)==0;
 }
@@ -305,4 +284,7 @@ void ioopm_hash_table_apply_to_all(ioopm_hash_table_t *ht, ioopm_apply_function 
    current = current->next;
   }
  }
+}
+bool compare_int_elements(elem_t a, elem_t b) {
+    return b.i - a.i == 0;
 }
