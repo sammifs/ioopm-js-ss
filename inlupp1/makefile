@@ -10,7 +10,7 @@ unit_tests: hash_table_test.c hash_table.c simple_linked_list-1.c iterator.c
 updated_tests: updated_tests.c hash_table.c simple_linked_list-1.c iterator.c common.c
 	gcc -Wall simple_linked_list-1.c hash_table.c common.c iterator.c updated_tests.c -lcunit -o updated_tests
 memtest:
-	valgrind --leak-check=full ./unit_tests
+	valgrind --leak-check=full ./updated_tests
 
 clean:
 	rm -f *.o *.gch unit_tests

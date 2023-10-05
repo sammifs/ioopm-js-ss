@@ -20,11 +20,6 @@ elem_t ioopm_iterator_next(ioopm_list_iterator_t *iter) {
     return iter->current->value;
 }
 
-//void ioopm_iterator_insert(ioopm_list_iterator_t *iter, int value) {
-// ioopm_link_t *prev = iter->current;
-// ioopm_link_t *next = prev->next;
-// prev->next = link_create(value, next);
-//}
 elem_t ioopm_iterator_remove(ioopm_list_iterator_t *iter) {
  ioopm_link_t *to_remove = iter->current->next;
  iter->current->next=to_remove->next;

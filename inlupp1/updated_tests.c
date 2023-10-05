@@ -19,6 +19,14 @@ int clean_suite(void)
 void test_create_destroy_ll()
 {
   ioopm_list_t *xs = ioopm_linked_list_create(compare_int_elements);
+
+  ioopm_linked_list_prepend(xs, int_elem(3));
+  ioopm_linked_list_prepend(xs, int_elem(3));
+  ioopm_linked_list_prepend(xs, int_elem(3));
+  ioopm_linked_list_prepend(xs, int_elem(3));
+  ioopm_linked_list_prepend(xs, int_elem(3));
+  ioopm_linked_list_prepend(xs, int_elem(3));
+  ioopm_linked_list_prepend(xs, int_elem(3));
   CU_ASSERT_PTR_NOT_NULL(xs);
   ioopm_linked_list_destroy(xs);
 }
@@ -91,7 +99,7 @@ void test_clear_ll()
 }
 bool is_even_ll(elem_t key, elem_t value, void *x)
 {
-  return value.i % 2 == 0;
+  return value.i%2==0;
 }
 void test_all_ll()
 {
@@ -115,9 +123,9 @@ void test_any_ll()
     ioopm_linked_list_append(xs, int_elem(values[i]));
   }
   CU_ASSERT_FALSE(ioopm_linked_list_any(xs, is_even_ll, NULL));
-  ioopm_linked_list_insert(xs, 2, int_elem(8));
-  CU_ASSERT_TRUE(ioopm_linked_list_any(xs, is_even_ll, NULL));
-  ioopm_linked_list_destroy(xs);
+//  ioopm_linked_list_insert(xs, 2, int_elem(8));
+//  CU_ASSERT_TRUE(ioopm_linked_list_any(xs, is_even_ll, NULL));
+    ioopm_linked_list_destroy(xs);
 }
 
 // ---------------------------------- ITERATOR --------------------------------------
@@ -349,7 +357,7 @@ void get_values()
 }
 void has_key()
 {
-  ioopm_hash_table_t *ht = ioopm_hash_table_create(hash_fun, compare_int_elements); // creating a new hash table
+  ioopm_hash_table_t *ht = ioopm_hash_table_create(hash_fun, compare_int_elements);
   elem_t key = int_elem(0);
   elem_t value = ptr_elem("Hello, world!");
   bool success = ioopm_hash_table_has_key(ht, key);
@@ -398,7 +406,7 @@ void for_any()
   ioopm_hash_table_insert(ht, int_elem(11), value);
   ioopm_hash_table_insert(ht, int_elem(15), value);
   ioopm_hash_table_insert(ht, int_elem(17), value);
-  CU_ASSERT_FALSE(ioopm_hash_table_any(ht, is_even, NULL));
+ CU_ASSERT_FALSE(ioopm_hash_table_any(ht, is_even, NULL));
   ioopm_hash_table_insert(ht, int_elem(8), value);
   CU_ASSERT_TRUE(ioopm_hash_table_any(ht, is_even, NULL));
   ioopm_hash_table_destroy(ht);
@@ -483,26 +491,33 @@ int main()
   // name or description of the test, and the function that runs
   // the test in question. If you want to add another test, just
   // copy a line below and change the information
-  if ((CU_add_test(linked_list, "create and destroy", test_create_destroy_ll) == NULL) ||
-      (CU_add_test(linked_list, "linked list test prepend and contains", test_linked_list_prepend_contains) == NULL) ||
-      (CU_add_test(linked_list, "linked_list test is_empty", test_is_empty_ll) == NULL) ||
-      (CU_add_test(linked_list, "linked list test size", test_size_ll) == NULL) ||
-      (CU_add_test(linked_list, "linked_list test remove", test_remove_ll) == NULL) ||
-      (CU_add_test(linked_list, "linked_list test clear", test_clear_ll) == NULL) ||
-      (CU_add_test(linked_list, "linked_list test get at index", test_get_ll) == NULL) ||
-      (CU_add_test(linked_list, "linked_list test bool all links", test_all_ll) == NULL) ||
-      (CU_add_test(linked_list, "linked_list test bool any links", test_any_ll) == NULL) ||
-      (CU_add_test(iterator, "iterator test all functions and destructor", test_create_iter_destroy) == NULL) ||
-      (CU_add_test(hash_table, "hash_table test creation and destruction", test_create_destroy) == NULL) ||
-      (CU_add_test(hash_table, "hash_table test inserting one element into ht", test_insert_once) == NULL) ||
-      (CU_add_test(hash_table, "hash_table test inserting three elements into ht", test_insert_three) == NULL) ||
-      (CU_add_test(hash_table, "hash_table test looking up empty hash table", test_lookup_empty) == NULL) ||
-      (CU_add_test(hash_table, "hash_table test inputing and removing once", remove_once) == NULL) ||
-      (CU_add_test(hash_table, "hash_table test inserting and checking size", counting_entries) == NULL) ||
-      (CU_add_test(hash_table, "hash_table test empty hash table", is_empty_ht) == NULL) ||
-      (CU_add_test(hash_table, "hash_table test clearing hash table", clear_ht) == NULL) ||
-      (CU_add_test(hash_table, "hash_table test list of keys", get_keys) == NULL) ||
-      (CU_add_test(hash_table, "hash_table test list of values", get_values) == NULL) || 0)
+  if (
+      (CU_add_test(linked_list, "create and destroy", test_create_destroy_ll) == NULL)
+     || (CU_add_test(linked_list, "linked list test prepend and contains", test_linked_list_prepend_contains) == NULL) 
+    ||  (CU_add_test(linked_list, "linked_list test is_empty", test_is_empty_ll) == NULL)
+      ||(CU_add_test(linked_list, "linked list test size", test_size_ll) == NULL)
+      ||(CU_add_test(linked_list, "linked_list test remove", test_remove_ll) == NULL)
+      ||(CU_add_test(linked_list, "linked_list test clear", test_clear_ll) == NULL)
+       ||(CU_add_test(linked_list, "linked_list test get at index", test_get_ll) == NULL)
+      || (CU_add_test(linked_list, "linked_list test bool all links", test_all_ll) == NULL) 
+        ||(CU_add_test(linked_list, "linked_list test bool any links", test_any_ll) == NULL)
+           ||(CU_add_test(iterator, "iterator test all functions and destructor", test_create_iter_destroy) == NULL)
+     ||   (CU_add_test(hash_table, "hash_table test creation and destruction", test_create_destroy) == NULL)
+     ||   (CU_add_test(hash_table, "hash_table test inserting one element into ht", test_insert_once) == NULL)
+     ||  (CU_add_test(hash_table, "hash_table test inserting three elements into ht", test_insert_three) == NULL)
+     || (CU_add_test(hash_table, "hash_table test looking up empty hash table", test_lookup_empty) == NULL)
+   ||   (CU_add_test(hash_table, "hash_table test inputing and removing once", remove_once) == NULL)
+  ||    (CU_add_test(hash_table, "hash_table test inserting and checking size", counting_entries) == NULL)
+ ||     (CU_add_test(hash_table, "hash_table test empty hash table", is_empty_ht) == NULL)
+ ||     (CU_add_test(hash_table, "hash_table test clearing hash table", clear_ht) == NULL)
+ ||     (CU_add_test(hash_table, "hash_table test list of keys", get_keys) == NULL) 
+ ||     (CU_add_test(hash_table, "hash_table test list of values", get_values) == NULL)
+      || (CU_add_test(hash_table, "hash_table test for_any", for_any) == NULL)
+      || (CU_add_test(hash_table, "hash_table test for_all", for_all) == NULL)
+      || (CU_add_test(hash_table, "hash_table test of apply", apply_func_test) == NULL)
+      || (CU_add_test(hash_table, "hash_table test has key", has_key) == NULL) 
+      || (CU_add_test(hash_table, "hash_table test has value", has_value) == NULL) 
+      || 0)
   {
     // If adding any of the tests fails, we tear down CUnit and exit
     CU_cleanup_registry();

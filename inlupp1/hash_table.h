@@ -40,7 +40,7 @@ bool ioopm_hash_table_remove(ioopm_hash_table_t *ht, elem_t key, elem_t *result)
 /// @brief returns the number of key => value entries in the hash table
 /// @param h hash table operated upon
 /// @return the number of key=> value entries in the hash table
-size_t ioopm_hash_table_size(ioopm_hash_table_t *ht);
+size_t ioopm_hash_table_size(const ioopm_hash_table_t *ht);
 /// @brief checks if the hash table is empty
 /// @param h hash table operated upon
 /// @return true if size == 0, else false
@@ -52,11 +52,11 @@ void ioopm_hash_table_clear(ioopm_hash_table_t *ht);
 /// @brief return all the keys for all entries in a hash map (in no particular order, but same as ioopm_hash_table_values)
 /// @param h hash table operated upon
 /// @return an array of keys for hash table h
-ioopm_list_t *ioopm_hash_table_keys(ioopm_hash_table_t *ht);
+ioopm_list_t *ioopm_hash_table_keys(const ioopm_hash_table_t *ht);
 /// @brief return the values for all entries in a hash map (in no particular order, but same as ioopm_hash_table_keys)
 /// @param h hash table operated upon
 /// @return an NULL terminated array of values for hash table h
-ioopm_list_t *ioopm_hash_table_values(ioopm_hash_table_t *ht);
+ioopm_list_t *ioopm_hash_table_values(const ioopm_hash_table_t *ht);
 /// @brief check if a hash table has an entry with a given key
 /// @param h hash table operated upon
 /// @param key the key sought
@@ -74,7 +74,7 @@ bool ioopm_hash_table_all(ioopm_hash_table_t *ht, ioopm_predicate pred, void *ar
 /// @param h hash table operated upon
 /// @param pred the predicate
 /// @param arg extra argument to pred
-bool ioopm_hash_table_any(ioopm_hash_table_t *ht, ioopm_predicate pred, void *arg);
+bool ioopm_hash_table_any(const ioopm_hash_table_t *ht, ioopm_predicate pred, void *arg);
 /// @brief apply a function to all entries in a hash table
 /// @param h hash table operated upon
 /// @param apply_fun the function to be applied to all elements

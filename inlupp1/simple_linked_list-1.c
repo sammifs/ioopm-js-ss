@@ -31,7 +31,6 @@ ioopm_link_t *link_create(elem_t value, ioopm_link_t *next)
     link->next = next;
     return link;
 }
-
 ioopm_list_t *ioopm_linked_list_create(ioopm_eq_function f)
 {
     ioopm_list_t *result = calloc(1, sizeof(struct list));
@@ -51,6 +50,7 @@ void ioopm_linked_list_destroy(ioopm_list_t *list)
         current = current->next;
         free(tmp);
     }
+current=NULL;
     free(list);
 }
 void ioopm_linked_list_append(ioopm_list_t *list, elem_t value)
@@ -68,7 +68,7 @@ void ioopm_linked_list_append(ioopm_list_t *list, elem_t value)
   }
   first->next=link_create(value, NULL);
  }
- list->size++;
+ list->size+=1;
 }
 void ioopm_linked_list_prepend(ioopm_list_t *list, elem_t value)
 {
@@ -158,18 +158,20 @@ elem_t ioopm_linked_list_get(ioopm_list_t *list, int index)
 bool ioopm_linked_list_contains(ioopm_list_t *list, elem_t element)
 {
     assert(list);
-    ioopm_link_t *cursor = list->head->next;
-    while (cursor)
+    ioopm_list_iterator_t *iter = ioopm_list_iterator(list);
+    
+    while (ioopm_iterator_has_next(iter))
     {
-        if(list->eq_fn(cursor->value, element))
+        elem_t cursor = ioopm_iterator_current(iter);
+        if(list->eq_fn(cursor, element))
         {
             return true;
         }
-        cursor = cursor->next;
+        ioopm_iterator_next(iter);
     }
     return false;
 }
-int ioopm_linked_list_size(ioopm_list_t *list)
+size_t ioopm_linked_list_size(ioopm_list_t *list)
 {
     assert(list);
     return list->size;
@@ -190,27 +192,27 @@ void ioopm_linked_list_clear(ioopm_list_t *list)
 }
 bool ioopm_linked_list_all(ioopm_list_t *list, ioopm_predicate prop, void *extra)
 {
- ioopm_link_t * current = list->head->next;
- for (int i = 0; i < list->size; ++i) {
-  if (prop(int_elem(i), current->value, extra) == false)
-  {
-   return false;
-  }
-  current=current->next;
+ ioopm_list_iterator_t *iter = ioopm_list_iterator(list);
+ bool result = true;
+ while (ioopm_iterator_has_next(iter) && result) {
+  elem_t current = ioopm_iterator_current(iter);
+  result = prop(int_elem(0), current, extra);
+  ioopm_iterator_next(iter);
  }
- return true;
+ ioopm_iterator_destroy(iter);
+ return result;
 }
 bool ioopm_linked_list_any(ioopm_list_t *list, ioopm_predicate prop, void *extra)
 {
- ioopm_link_t * current = list->head->next;
- for (int i = 0; i < list->size; ++i) {
-  if (prop(int_elem(i), current->value, extra))
-  {
-   return true;
-  }
-  current=current->next;
+ ioopm_list_iterator_t *iter = ioopm_list_iterator(list);
+ bool result = false;
+ while (ioopm_iterator_has_next(iter) && !result) {
+  elem_t current = ioopm_iterator_current(iter);
+  result = prop(int_elem(0), current, extra);
+  ioopm_iterator_next(iter);
  }
- return false;
+ ioopm_iterator_destroy(iter);
+ return result;
 }
 void ioopm_linked_list_apply_to_all(ioopm_list_t *list, ioopm_apply_function fun, void *extra)
 {
