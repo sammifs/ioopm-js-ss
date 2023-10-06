@@ -9,6 +9,8 @@ unit_tests: hash_table_test.c hash_table.c simple_linked_list-1.c iterator.c
 	gcc -Wall hash_table.c simple_linked_list-1.c hash_table_test.c iterator.c -lcunit -o unit_tests
 updated_tests: updated_tests.c hash_table.c simple_linked_list-1.c iterator.c common.c
 	gcc -Wall simple_linked_list-1.c hash_table.c common.c iterator.c updated_tests.c -lcunit -o updated_tests
+freq: freq-count.c hash_table.c simple_linked_list-1.c iterator.c common.c
+	gcc -Wall simple_linked_list-1.c hash_table.c common.c iterator.c freq-count.c -lcunit -o freq
 memtest:
 	valgrind --leak-check=full ./updated_tests
 

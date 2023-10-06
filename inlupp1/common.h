@@ -25,6 +25,7 @@ typedef struct link ioopm_link_t;
 struct list
 {
     ioopm_link_t *head;
+    ioopm_link_t *last;
     int size;
     ioopm_eq_function eq_fn;
 };

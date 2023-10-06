@@ -180,7 +180,7 @@ void test_insert_once()
   CU_ASSERT_FALSE(success);
   ioopm_hash_table_insert(h, int_elem(k), ptr_elem(v));
   success = ioopm_hash_table_lookup(h, int_elem(k), &result);
-  CU_ASSERT_PTR_NOT_NULL(&result);
+  CU_ASSERT_TRUE(strcmp(v, (char *) result.p) == 0);
   CU_ASSERT_TRUE(success);
   ioopm_hash_table_destroy(h);
 }
