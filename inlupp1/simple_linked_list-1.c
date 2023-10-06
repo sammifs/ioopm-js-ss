@@ -35,6 +35,7 @@ ioopm_list_t *ioopm_linked_list_create(ioopm_eq_function f)
 {
     ioopm_list_t *result = calloc(1, sizeof(struct list));
     result->head=link_create(int_elem(0), NULL);
+    
     result->size=0;
     result->eq_fn=f;
     return result;
@@ -53,21 +54,17 @@ void ioopm_linked_list_destroy(ioopm_list_t *list)
 current=NULL;
     free(list);
 }
+//bool ioopm_linked_list_is_empty(ioopm_linked_list_t *ht);
 void ioopm_linked_list_append(ioopm_list_t *list, elem_t value)
 {
- if (ioopm_linked_list_is_empty(list))
- {
-  list->head->next = link_create(value, NULL);
- }
- else 
- {
-  ioopm_link_t *first = list->head->next;
-  while (first->next != NULL)
-  {
-   first = first->next;
-  }
-  first->next=link_create(value, NULL);
- }
+if(ioopm_linked_list_is_empty(list)) {
+ list->head->next=link_create(value, NULL);
+ list->last=list->head->next;
+}
+else {
+ list->last->next=link_create(value, NULL);
+ list->last=list->last->next;
+}
  list->size+=1;
 }
 void ioopm_linked_list_prepend(ioopm_list_t *list, elem_t value)
@@ -135,7 +132,10 @@ elem_t ioopm_linked_list_remove(ioopm_list_t *list, int index)
         prev = current;
         current = current->next;
     }
-    prev->next = current->next;
+    //prev->next = current->next;
+if(index==list->size) {
+ list->last=prev;
+}
 	value = current->value;
     free(current);
     list->size--;
