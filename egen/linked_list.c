@@ -201,6 +201,7 @@ bool ioopm_linked_list_contains(ioopm_list_t *list, elem_t element) {
 }
 
 size_t ioopm_linked_list_size(ioopm_list_t *list) {
+    assert(list);
     return list->size;
 }
 

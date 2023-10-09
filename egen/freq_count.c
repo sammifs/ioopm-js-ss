@@ -15,15 +15,18 @@ void sort_keys(char *keys[], size_t no_keys)
 {
     qsort(keys, no_keys, sizeof(char *), cmpstringp);
 }
-void process_word(char *word, ioopm_hash_table_t *ht)
+elem_t process_word(char *word, ioopm_hash_table_t *ht)
 {
     // FIXME: Rewrite to match your own interface, error-handling, etc.
     bool success;
     int freq = ioopm_hash_table_has_key(ht, ptr_elem(word)) ? (ioopm_hash_table_lookup(ht, ptr_elem(word), &success)).i : 0;
-    ioopm_hash_table_insert(ht, (elem_t){.p = strdup(word)}, (elem_t){.i = freq + 1});
+    char *dupword = strdup(word);
+    ioopm_hash_table_insert(ht, (elem_t){.p = dupword}, (elem_t){.i = freq + 1});
+    return ptr_elem(dupword);
 }
-void process_file(char *filename, ioopm_hash_table_t *ht)
+elem_t process_file(char *filename, ioopm_hash_table_t *ht)
 {
+    ioopm_list_t *ls = ioopm_linked_list_create(NULL);
     FILE *f = fopen(filename, "r");
     while (true)
     {
@@ -39,11 +42,12 @@ void process_file(char *filename, ioopm_hash_table_t *ht)
              word && *word;
              word = strtok(NULL, Delimiters))
         {
-            process_word(word, ht);
+            ioopm_linked_list_append(ls, process_word(word, ht));
         }
         free(buf);
     }
     fclose(f);
+    return ptr_elem(ls);
 }
 
 int string_sum_hash(elem_t e)
@@ -65,11 +69,12 @@ int main(int argc, char *argv[])
     ioopm_hash_table_t *ht = ioopm_hash_table_create((ioopm_hash_function)
                                                          string_sum_hash,
                                                      string_eq, string_eq);
+    ioopm_list_t *ls = ioopm_linked_list_create(NULL); // LIST OF LISTS
     if (argc > 1)
     {
         for (int i = 1; i < argc; ++i)
         {
-            process_file(argv[i], ht);
+            ioopm_linked_list_append(ls, process_file(argv[i], ht));
         }
         // FIXME: If the keys are returned as a list, transfer them into
         // an array to use `sort_keys` (perhaps using an iterator?)
@@ -97,5 +102,20 @@ int main(int argc, char *argv[])
     }
     // FIXME: Leaks memory! Use valgrind to find out where that memory is
     // being allocated, and then insert code here to free it.
+    ioopm_list_iterator_t *iter_outer = ioopm_list_iterator(ls);
+
+    while (ioopm_iterator_has_next(iter_outer)) {
+        ioopm_list_iterator_t *iter_inner = ioopm_list_iterator(ioopm_iterator_next(iter_outer).p);
+        while (ioopm_iterator_has_next(iter_inner)) {
+            free(ioopm_iterator_next(iter_inner).p);
+        }
+        ioopm_iterator_destroy(iter_inner);
+    }
+    ioopm_iterator_reset(iter_outer);
+    while (ioopm_iterator_has_next(iter_outer)) {
+        ioopm_linked_list_destroy(ioopm_iterator_next(iter_outer).p);
+    }
+    ioopm_iterator_destroy(iter_outer);
+    ioopm_linked_list_destroy(ls);
     ioopm_hash_table_destroy(ht);
 }
