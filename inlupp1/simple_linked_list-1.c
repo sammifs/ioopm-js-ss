@@ -41,19 +41,33 @@ ioopm_list_t *ioopm_linked_list_create(ioopm_eq_function f)
     return result;
 }
 
-void ioopm_linked_list_destroy(ioopm_list_t *list)
-{
+void recursive_link_destroy(ioopm_link_t *link) {
+    if (link != NULL) {
+        recursive_link_destroy(link->next);
+        free(link);
+    }
+}
+void ioopm_linked_list_destroy(ioopm_list_t *list) {
     assert(list);
     ioopm_link_t *current = list->head;
-    while (current)
-    {
-        ioopm_link_t *tmp = current;
-        current = current->next;
-        free(tmp);
+    if (current != NULL) {
+        recursive_link_destroy(current);
     }
-current=NULL;
     free(list);
 }
+// void ioopm_linked_list_destroy(ioopm_list_t *list)
+// {
+//     assert(list);
+//     ioopm_link_t *current = list->head;
+//     while (current)
+//     {
+//         ioopm_link_t *tmp = current;
+//         current = current->next;
+//         free(tmp);
+//     }
+// current=NULL;
+//     free(list);
+// }
 //bool ioopm_linked_list_is_empty(ioopm_linked_list_t *ht);
 void ioopm_linked_list_append(ioopm_list_t *list, elem_t value)
 {
@@ -165,10 +179,12 @@ bool ioopm_linked_list_contains(ioopm_list_t *list, elem_t element)
         elem_t cursor = ioopm_iterator_current(iter);
         if(list->eq_fn(cursor, element))
         {
+            ioopm_iterator_destroy(iter);
             return true;
         }
         ioopm_iterator_next(iter);
     }
+    ioopm_iterator_destroy(iter);
     return false;
 }
 size_t ioopm_linked_list_size(ioopm_list_t *list)
