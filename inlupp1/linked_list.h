@@ -2,6 +2,14 @@
 #include "common.h"
 #include <stdbool.h>
 #include <stddef.h>
+
+/**
+ * @file linked_list.h
+ * @author Johannes Segersten, Samuel Sverker
+ * @date 12 Okt 2021
+ * @brief A simple linked list. Functions require ioopm_list_iterator_t to work.
+ */
+
 /// @brief Creates a new empty list
 /// @param ioopm_eq_function compares two elem_t
 /// @return an empty linked list
@@ -69,7 +77,7 @@ void ioopm_linked_list_clear(ioopm_list_t *list);
 /// @brief Test if a supplied property holds for all elements in a list.
 /// The function returns as soon as the return value can be determined.
 /// @param list the linked list
-/// @param prop the property to be tested (function pointer)
+/// @param prop the property to be tested (function pointer to ioopm_predicate)
 /// @param extra an additional argument (may be NULL) that will be passed to all internal calls of prop
 /// @return true if prop holds for all elements in the list, else false
 bool ioopm_linked_list_all(ioopm_list_t *list, ioopm_predicate prop, void *extra);
@@ -84,6 +92,6 @@ bool ioopm_linked_list_any(ioopm_list_t *list, ioopm_predicate prop, void *extra
 
 /// @brief Apply a supplied function to all elements in a list.
 /// @param list the linked list
-/// @param fun the function to be applied
+/// @param fun the function to be applied (function pointer to ioopm_apply_function)
 /// @param extra an additional argument (may be NULL) that will be passed to all internal calls of fun
 void ioopm_linked_list_apply_to_all(ioopm_list_t *list, ioopm_apply_function fun, void *extra);

@@ -1,6 +1,15 @@
 #pragma once
 #include <stdbool.h>
 #include "linked_list.h"
+
+
+/**
+ * @file iterator.h
+ * @author Johannes Segersten, Samuel Sverker
+ * @date 12 Okt 2021
+ * @brief iterator data structure applied together with ioopm_list_t
+ */
+
 struct iter {
     ioopm_link_t *current;
     ioopm_list_t *list;

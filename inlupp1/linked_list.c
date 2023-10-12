@@ -4,25 +4,6 @@
 #include <stdlib.h>
 #include <assert.h>
 
-/**
- * @file simple_linked_list.c
- * @author Johannes Segersten, Samuel Sverker
- * @date 12 Okt 2021
- * @brief A simple linked list that implements parts of the interface
- * of `linked_list.h`. The functions that are not implemented will fail
- * at runtime with an assertion error, printing a message to stderr.
- */
-
-// This is a macro that is used in the functions that are not implemented,
-// to have them fail at runtime. You do not have to understand it to use
-// this file!
-#define NOT_SUPPORTED()                                                            \
-    do                                                                             \
-    {                                                                              \
-        fprintf(stderr, "The simple linked list does not support %s\n", __func__); \
-        assert(false);                                                             \
-    } while (0)
-
 // The links of the linked list
 ioopm_link_t *link_create(elem_t value, ioopm_link_t *next)
 {
@@ -55,7 +36,6 @@ void ioopm_linked_list_destroy(ioopm_list_t *list)
     free(list);
 }
 
-//bool ioopm_linked_list_is_empty(ioopm_linked_list_t *ht);
 void ioopm_linked_list_append(ioopm_list_t *list, elem_t value)
 {
 if(ioopm_linked_list_is_empty(list)) {
