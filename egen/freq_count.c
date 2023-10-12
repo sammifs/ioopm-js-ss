@@ -28,6 +28,10 @@ elem_t process_file(char *filename, ioopm_hash_table_t *ht)
 {
     ioopm_list_t *ls = ioopm_linked_list_create(NULL);
     FILE *f = fopen(filename, "r");
+    if (f == NULL) { 
+        printf("NO FILE OF SUCH NAME FOUND, EXITING.\n");
+        return ptr_elem(NULL);
+    }
     while (true)
     {
         char *buf = NULL;
@@ -69,12 +73,14 @@ int main(int argc, char *argv[])
     ioopm_hash_table_t *ht = ioopm_hash_table_create((ioopm_hash_function)
                                                          string_sum_hash,
                                                      string_eq, string_eq);
-    ioopm_list_t *ls = ioopm_linked_list_create(NULL); // LIST OF LISTS
+    ioopm_list_t *lists = ioopm_linked_list_create(NULL); // LIST OF LISTS
     if (argc > 1)
     {
         for (int i = 1; i < argc; ++i)
         {
-            ioopm_linked_list_append(ls, process_file(argv[i], ht));
+            elem_t file = process_file(argv[i], ht);
+            if (file.p == NULL) { return -1; }
+            ioopm_linked_list_append(lists, file);
         }
         // FIXME: If the keys are returned as a list, transfer them into
         // an array to use `sort_keys` (perhaps using an iterator?)
@@ -102,7 +108,7 @@ int main(int argc, char *argv[])
     }
     // FIXME: Leaks memory! Use valgrind to find out where that memory is
     // being allocated, and then insert code here to free it.
-    ioopm_list_iterator_t *iter_outer = ioopm_list_iterator(ls);
+    ioopm_list_iterator_t *iter_outer = ioopm_list_iterator(lists);
 
     while (ioopm_iterator_has_next(iter_outer)) {
         ioopm_list_iterator_t *iter_inner = ioopm_list_iterator(ioopm_iterator_next(iter_outer).p);
@@ -116,6 +122,6 @@ int main(int argc, char *argv[])
         ioopm_linked_list_destroy(ioopm_iterator_next(iter_outer).p);
     }
     ioopm_iterator_destroy(iter_outer);
-    ioopm_linked_list_destroy(ls);
+    ioopm_linked_list_destroy(lists);
     ioopm_hash_table_destroy(ht);
 }

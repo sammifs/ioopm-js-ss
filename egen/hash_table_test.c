@@ -16,6 +16,9 @@ int clean_suite(void)
     return 0;
 }
 
+bool compare_int_elements(elem_t a, elem_t b) { // ioopm_eq_function
+  return b.i == a.i;
+}
 int extract_int_hash_key(elem_t key)
 {
   return key.i;

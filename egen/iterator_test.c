@@ -13,7 +13,6 @@ int clean_suite(void) {
   // run a test suite
   return 0;
 }
-
 bool compare_int_elements(elem_t a, elem_t b) { // ioopm_eq_function
   return b.i == a.i;
 }
