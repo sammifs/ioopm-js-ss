@@ -7,34 +7,38 @@
 /**
  * @file hash_table.h
  * @author Johannes Segersten, Samuel Sverker
- * @date october 2 2023
- * @brief simple hash table that maps integer keys to string values
+ * @date october 12 2023
+ * @brief hash table that maps elem_t keys to elem_t values
  */
 
 typedef struct hash_table ioopm_hash_table_t;
+
 typedef int(*ioopm_hash_function)(elem_t);
 
 /// @brief Create a new hash table
+/// @param a hash function that maps a given elem_t to an integer
 /// @return a new empty hash table
 ioopm_hash_table_t *ioopm_hash_table_create(ioopm_hash_function hash_fun, ioopm_eq_function key_eq_fun);
 /// @brief delete a hash table and free its memory
+/// the hash table is not responsible for its values
 /// @param ht a hash table to be deleted
 void ioopm_hash_table_destroy(ioopm_hash_table_t *ht);
 /// @brief add key => value entry in hash table ht
 /// @param ht hash table operated upon
-/// @param key key to insert
-/// @param value value to insert
+/// @param key elem_t key to insert
+/// @param value elem_t value to insert
 void ioopm_hash_table_insert(ioopm_hash_table_t *ht, elem_t key, elem_t value);
 /// @brief lookup value for key in hash table ht
 /// @param ht hash table operated upon
 /// @param key the key to lookup
-/// @param result ** a pointer to a char * that is updated upon success
+/// @param result * a pointer to a elem_t that is updated upon success
 /// @return bool true if key maps to a value, false otherwise
 bool ioopm_hash_table_lookup(ioopm_hash_table_t *ht, elem_t key, elem_t *result);
 /// @Brief remove any mapping from key to a value
 /// @param ht hash table operated upon
 /// @param key key to remove
-/// @param result uppdated with the removed value if key was removed successfully
+/// @param *result a pointer to an elem_t uppdated with the removed value if key was removed successfully
+/// don't access result if removal was unsuccessful
 /// @return true if key was removed successfully, false otherwise
 bool ioopm_hash_table_remove(ioopm_hash_table_t *ht, elem_t key, elem_t *result);
 /// @brief returns the number of key => value entries in the hash table
@@ -46,7 +50,6 @@ size_t ioopm_hash_table_size(const ioopm_hash_table_t *ht);
 /// @return true if size == 0, else false
 bool ioopm_hash_table_is_empty(ioopm_hash_table_t *ht);
 ///@brief clear all the entries in a hash table
-
 /// @param h hash table operated upon
 void ioopm_hash_table_clear(ioopm_hash_table_t *ht);
 /// @brief return all the keys for all entries in a hash map (in no particular order, but same as ioopm_hash_table_values)
@@ -80,4 +83,6 @@ bool ioopm_hash_table_any(const ioopm_hash_table_t *ht, ioopm_predicate pred, vo
 /// @param apply_fun the function to be applied to all elements
 /// @param arg extra argument to apply_fun
 void ioopm_hash_table_apply_to_all(ioopm_hash_table_t *ht, ioopm_apply_function apply_fun, void *arg);
+
+///@brief returns true if key and value are equal
 bool value_equiv(elem_t key, elem_t value, void *extra);
